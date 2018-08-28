@@ -1,2 +1,5 @@
 .idea
 *.pyc
+data/
+model_dir/
+.DS_Store
