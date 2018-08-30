@@ -25,7 +25,7 @@ def parse_args():
     flags.add_argument('--dropout_keep_prob', type=float, default=0.5, help='The probability that each element is kept.')
     flags.add_argument('--norm_2', type=bool, default=False, help='When set, input is normalized with (W / 255 + 0.5) instead of (W / 255).')
     flags.add_argument('--spatial_squeeze', type=bool, default=True, help='If True, logits is of shape [B, C], if false logits is of shape [B, 1, 1, C], where B is batch_size and C is number of classes.')
-    flags.add_argument('--augment', type=bool, default=True, help='Whether the training data should be augmented with random flips and other visual adjustments.')
+    flags.add_argument('--augment', type=int, default=1, help='Whether the training data should be augmented with random flips and other visual adjustments.')
     flags.add_argument('--num_classes', type=int, default=1000, help='Number of classes to classify.')
     flags.add_argument('--batch_size', type=int, default=16, help='Input function batch size.')
     flags.add_argument('--buffer_size', type=int, default=64, help='Input function buffer size.')
@@ -76,7 +76,7 @@ def run(model_fn):
                                    batch_size=args.batch_size,
                                    buffer_size=args.buffer_size,
                                    img_shape=[args.img_height, args.img_width, 3],
-                                   augment=args.augment,
+                                   augment=bool(args.augment),
                                    norm_2=args.norm_2,
                                    map_first=args.map_first,
                                    num_parallel_calls=args.num_parallel_calls,
