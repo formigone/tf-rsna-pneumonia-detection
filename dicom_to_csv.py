@@ -67,9 +67,6 @@ def from_csv(path):
         ids[patientId]['box_width_{}'.format(min_box)] = float(parts[3]) / ids[patientId]['img_width']
         ids[patientId]['box_height_{}'.format(min_box)] = float(parts[4]) / ids[patientId]['img_height']
 
-      if index > 100:
-        break
-
   ids = pd.DataFrame(ids.values(), columns=['patientId', 'label', 'img_width', 'img_height', 'male', 'age', 
           'box_x_min_0',
           'box_y_min_0',
