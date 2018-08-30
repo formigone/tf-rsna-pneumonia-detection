@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        html, body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        }
+        img, div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        }
+
+        img {
+        width: 224px;
+        height: 224px;
+        }
+
+        .bb {
+        background: transparent;
+        border: 1px solid #c00;
+        }
+    </style>
+</head>
+<body>
+<script>
+function drawBoundingBoxes(img, data, index) {
+    window.d = { img, data, index }
+    const meta = {
+        x: data.box_x_min_0[index],
+        y: data.box_y_min_0[index],
+        w: data.box_width_0[index],
+        h: data.box_height_0[index],
+        img_w: img.naturalWidth,
+        img_h: img.naturalHeight,
+    }
+    console.log(meta);
+    const bb = document.createElement('div')
+    bb.className = 'bb';
+    bb.style.width = (meta.img_w * meta.w) + 'px';
+    bb.style.height = (meta.img_h * meta.h) + 'px';
+    bb.style.top = (meta.img_h * meta.y) + 'px';
+    bb.style.left = (meta.img_w * meta.x) + 'px';
+    document.body.appendChild(bb);
+}
+
+function main(data) {
+    console.log(data);
+    var img = document.createElement('img');
+    img.addEventListener('load', (loadedImg) => drawBoundingBoxes(loadedImg.target, data, 1));
+    img.src = `/data/stage-1-train-raw/${data.patientId[1]}.jpeg`;
+    document.body.appendChild(img);
+}
+    fetch('/train_with_boxes.json')
+    .then(res => res.json())
+    .then(json => main(json))
+
+</script>
+</body>
+</html>
