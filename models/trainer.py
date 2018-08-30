@@ -89,61 +89,38 @@ def run(model_fn):
                                   img_shape=[args.img_height, args.img_width, 3])
 
         tf.logging.info('Training for {}'.format(None if args.max_steps < 1 else args.max_steps))
-        train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn,
-                                            max_steps=None if args.max_steps < 1 else args.max_steps)
+        train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=None if args.max_steps < 1 else args.max_steps)
         eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn, steps=None, throttle_secs=args.throttle_secs)
 
         tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
     elif args.mode == 'predict':
-        input_fn = gen_input(args.predict_set, batch_size=args.batch_size,
-                             img_shape=[args.img_height, args.img_width, 3])
+        input_fn = gen_input(args.predict_set.split(','),
+                                  batch_size=args.batch_size,
+                                  buffer_size=args.buffer_size,
+                                  norm_2=args.norm_2,
+                                  img_shape=[args.img_height, args.img_width, 3])
 
         tf.logging.debug('Generating predictions using {}'.format(args.predict_set))
         predictions = estimator.predict(input_fn=input_fn)
         tf.logging.debug('Got predictions')
+        tf.logging.debug('Fields: has pneumonia | male | age | box_x_min_0 | box_y_min_0 | box_width_0 | box_height_0 | box_x_min_1 | box_y_min_1 | box_width_1 | box_height_1 | box_x_min_2 | box_y_min_2 | box_width_2 | box_height_2 | box_x_min_3 | box_y_min_3 | box_width_3 | box_height_3')
 
         # for pred in predictions:
         #   print('{}'.format(pred['cholesterol']))
         # return
 
         tf.logging.debug('Reading input csv {}'.format(args.predict_csv))
-        df = pd.read_csv(args.predict_csv)
-        mse = 0
-        correct = wrong = max = 0
-        min = 999999
-        if True:
-            # out_fh.write('id,toxic,severe_toxic,obscene,threat,insult,identity_hate\n')
-            for pred, (i, row) in itertools.izip(predictions, df.iterrows()):
-                val_exact = float(row[-1:])
-                margin = val_exact * 0.15  # 10%
-                print(pred['cholesterol']);
-                if args.label_scale == 0:
-                    pred_norm = int(pred['cholesterol'] * 210 + 90)
-                else:
-                    pred_norm = int(pred['cholesterol'] * args.label_scale)
-                match = False
-                if int(val_exact - margin) <= pred_norm <= int(val_exact + margin):
-                    correct += 1
-                    match = True
-                else:
-                    wrong += 1
-
-                mse += (pred_norm - val_exact) ** 2
-                if pred_norm < min:
-                    min = pred_norm
-                if pred_norm > max:
-                    max = pred_norm
-
-                print('{} [{}, {}] {} {}'.format(
-                    int(val_exact),
-                    int(val_exact - margin),
-                    int(val_exact + margin),
-                    pred_norm,
-                    '' if match else '*'
-                ))
-            tf.logging.debug('Accuracy {}/{} ({}%)'.format(correct, correct + wrong, correct / (correct + wrong) * 100))
-            tf.logging.debug('Min/max {}/{}'.format(min, max))
-            tf.logging.debug('MSE {}'.format(mse / (correct + wrong)))
+        df = pd.read_csv(args.predict_set)
+        # out_fh.write('id,toxic,severe_toxic,obscene,threat,insult,identity_hate\n')
+        for pred, [_, row] in itertools.izip(predictions, df.iterrows()):
+            print('{},{} {} {} {} {}'.format(
+                row['patientId'].replace('data/stage-1-train-raw/', '').replace('.jpeg', ''),
+                pred['predictions'][0],
+                pred['predictions'][3] * 1024,
+                pred['predictions'][4] * 1024,
+                pred['predictions'][5] * 1024,
+                pred['predictions'][6] * 1024,
+            ))
     elif args.mode == 'weights':
         weights = estimator.get_variable_value('Conv2d_1a_7x7/weights')
         path = 'weights-vis-bn/{}'.format(int(time.time()))
