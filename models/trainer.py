@@ -116,10 +116,10 @@ def run(model_fn):
             print('{},{} {} {} {} {}'.format(
                 row['patientId'].replace('data/stage-1-train-raw/', '').replace('.jpeg', ''),
                 pred['predictions'][0],
-                pred['predictions'][3] * 1024,
-                pred['predictions'][4] * 1024,
-                pred['predictions'][5] * 1024,
-                pred['predictions'][6] * 1024,
+                pred['predictions'][3] * row[-2],
+                pred['predictions'][4] * row[-1],
+                pred['predictions'][5] * row[-2],
+                pred['predictions'][6] * row[-1],
             ))
     elif args.mode == 'weights':
         weights = estimator.get_variable_value('Conv2d_1a_7x7/weights')

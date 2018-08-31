@@ -1,10 +1,10 @@
-with open('train_with_boxes.csv', 'r') as file:
+with open('train_with_boxes_age.csv', 'r') as file:
   first_line = True
   labels = [0, 0]
   for line in file:
     if first_line:
       first_line = False
-      print('patientId,label,male,age,box_x_min_0,box_y_min_0,box_width_0,box_height_0,box_x_min_1,box_y_min_1,box_width_1,box_height_1,box_x_min_2,box_y_min_2,box_width_2,box_height_2,box_x_min_3,box_y_min_3,box_width_3,box_height_3')
+      print('patientId,label,male,age,box_x_min_0,box_y_min_0,box_width_0,box_height_0,box_x_min_1,box_y_min_1,box_width_1,box_height_1,box_x_min_2,box_y_min_2,box_width_2,box_height_2,box_x_min_3,box_y_min_3,box_width_3,box_height_3,img_width,img_height')
       continue
 
     parts = line.split(',')
@@ -16,8 +16,8 @@ with open('train_with_boxes.csv', 'r') as file:
       labels[1] += 1
 
     if labels[0] >= 300 and labels[1] >= 700:
-      continue
-      print('data/stage-1-train-raw/{}.jpeg,{},{}'.format(parts[0].strip(), label, ','.join(parts[4:]).strip()))
-    else:
       # continue
-      print('data/stage-1-train-raw/{}.jpeg,{},{}'.format(parts[0].strip(), label, ','.join(parts[4:]).strip()))
+      print('data/stage-1-train-raw/{}.jpeg,{}'.format(parts[0].strip(), ','.join(parts[1:]).strip()))
+    else:
+      continue
+      print('data/stage-1-train-raw/{}.jpeg,{}'.format(parts[0].strip(), ','.join(parts[1:]).strip()))

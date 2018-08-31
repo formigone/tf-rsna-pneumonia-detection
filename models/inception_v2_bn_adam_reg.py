@@ -415,7 +415,6 @@ def model_fn(features, labels, mode, params):
 
   eval_metric_ops = {
     'auc_val': tf.metrics.auc(labels=labels, predictions=predictions['predictions']),
-    'mca_val': tf.metrics.mean_per_class_accuracy(labels=labels, predictions=predictions['predictions'], num_classes=params['num_classes']),
     'accuracy_val': tf.metrics.accuracy(labels=labels, predictions=predictions['predictions']),
   }
 
@@ -428,7 +427,6 @@ def model_fn(features, labels, mode, params):
     train_op = optimizer.minimize(loss=loss, global_step=tf.train.get_global_step())
 
   tf.summary.scalar('auc_train', eval_metric_ops['auc_val'][1])
-  tf.summary.scalar('mca_train', eval_metric_ops['mca_val'][1])
   tf.summary.scalar('accuracy_train', eval_metric_ops['accuracy_val'][1])
   tf.summary.histogram('labels', labels)
   tf.summary.histogram('predictions', predictions['predictions'])

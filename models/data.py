@@ -31,7 +31,7 @@ def gen_input(filename, batch_size=16, repeat=1, buffer_size=1, img_shape=(128, 
     return img / 255, parsed['class']
 
   def decode_csv(line):
-    parsed = tf.decode_csv(line, record_defaults=[['r'], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.]])
+    parsed = tf.decode_csv(line, record_defaults=[['r'], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.]])
     path = parsed[0]
     value = tf.read_file(path)
     feature = tf.image.decode_jpeg(value, channels=3)
@@ -43,9 +43,8 @@ def gen_input(filename, batch_size=16, repeat=1, buffer_size=1, img_shape=(128, 
       feature = tf.image.random_flip_left_right(feature)
       feature = tf.image.random_flip_up_down(feature)
 
-    label = tf.cast(parsed[1:], dtype=tf.float16)
-    # Scale 'age' by a factor of 100
-    label[1] = label[1] / 100
+    # slice out columns: is_sick | male | age | x1 | y1 | w1 | h1
+    label = tf.cast(parsed[1:8], dtype=tf.float16)
 
     # [<tf.Tensor 'truediv:0' shape=(224, 224, 3) dtype=float32>, <tf.Tensor 'Cast:0' shape=() dtype=int64>]
     # print([feature, label])

@@ -37,7 +37,7 @@ def from_csv(path):
           'img_width': dcm.Columns,
           'img_height': dcm.Rows,
           'male': int(dcm.PatientSex.upper() == 'M'),
-          'age': int(dcm.PatientAge),
+          'age': int(dcm.PatientAge) / 100,
           'box_x_min_0': 0,
           'box_y_min_0': 0,
           'box_width_0': 0,
@@ -67,25 +67,32 @@ def from_csv(path):
         ids[patientId]['box_width_{}'.format(min_box)] = float(parts[3]) / ids[patientId]['img_width']
         ids[patientId]['box_height_{}'.format(min_box)] = float(parts[4]) / ids[patientId]['img_height']
 
-  ids = pd.DataFrame(ids.values(), columns=['patientId', 'label', 'img_width', 'img_height', 'male', 'age', 
-          'box_x_min_0',
-          'box_y_min_0',
-          'box_width_0',
-          'box_height_0',
-          'box_x_min_1',
-          'box_y_min_1',
-          'box_width_1',
-          'box_height_1',
-          'box_x_min_2',
-          'box_y_min_2',
-          'box_width_2',
-          'box_height_2',
-          'box_x_min_3',
-          'box_y_min_3',
-          'box_width_3',
-          'box_height_3'])
-  ids.to_csv('train_with_boxes.csv', index=False)
-  ids.to_json('train_with_boxes.json')
+  ids = pd.DataFrame(ids.values(), columns=[
+    'patientId',
+    'label',
+    'male',
+    'age',
+    'box_x_min_0',
+    'box_y_min_0',
+    'box_width_0',
+    'box_height_0',
+    'box_x_min_1',
+    'box_y_min_1',
+    'box_width_1',
+    'box_height_1',
+    'box_x_min_2',
+    'box_y_min_2',
+    'box_width_2',
+    'box_height_2',
+    'box_x_min_3',
+    'box_y_min_3',
+    'box_width_3',
+    'box_height_3',
+    'img_width',
+    'img_height',
+  ])
+  ids.to_csv('train_with_boxes_age.csv', index=False)
+  ids.to_json('train_with_boxes_age.json')
   print(ids)
   exit(0)
 
